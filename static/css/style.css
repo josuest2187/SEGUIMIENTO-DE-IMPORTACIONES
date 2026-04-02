@@ -1,0 +1,97 @@
+/* =============================================
+   Seguimiento de Importaciones – Custom CSS
+   ============================================= */
+
+/* Navbar */
+.navbar-custom {
+  background-color: #1a3c6e;
+}
+
+.navbar-custom .nav-link:hover,
+.navbar-custom .nav-link.active {
+  color: #ffd700 !important;
+  font-weight: 600;
+}
+
+/* Footer */
+.footer-custom {
+  background-color: #f1f3f5;
+  border-top: 1px solid #dee2e6;
+}
+
+/* Stat cards */
+.stat-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12) !important;
+}
+
+.stat-icon {
+  margin-bottom: 0.5rem;
+}
+
+/* Table rows */
+.table-hover tbody tr:hover {
+  background-color: #eef4ff;
+  transition: background-color 0.15s ease;
+}
+
+/* Status badges */
+.badge-ordenado {
+  background-color: #0d6efd;
+  color: #fff;
+  padding: 0.4em 0.75em;
+  border-radius: 0.375rem;
+  font-size: 0.82em;
+}
+
+.badge-en-transito {
+  background-color: #ffc107;
+  color: #212529;
+  padding: 0.4em 0.75em;
+  border-radius: 0.375rem;
+  font-size: 0.82em;
+}
+
+.badge-en-aduana {
+  background-color: #fd7e14;
+  color: #fff;
+  padding: 0.4em 0.75em;
+  border-radius: 0.375rem;
+  font-size: 0.82em;
+}
+
+.badge-entregado {
+  background-color: #198754;
+  color: #fff;
+  padding: 0.4em 0.75em;
+  border-radius: 0.375rem;
+  font-size: 0.82em;
+}
+
+.badge-cancelado {
+  background-color: #6c757d;
+  color: #fff;
+  padding: 0.4em 0.75em;
+  border-radius: 0.375rem;
+  font-size: 0.82em;
+}
+
+/* Border-orange utility for dashboard card */
+.border-orange {
+  border-color: #fd7e14 !important;
+}
+
+/* Items table in forms */
+#tablaItems tbody tr td {
+  vertical-align: middle;
+}
+
+/* Remove item button */
+.btn-remove-item {
+  line-height: 1;
+}

@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block title %}Editar Importación – {{ imp.numero_referencia }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2><i class="bi bi-pencil-square"></i> Editar Importación</h2>
+  <a href="{{ url_for('importaciones_detalle', id=imp.id) }}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left"></i> Volver
+  </a>
+</div>
+
+<form method="post" id="formImportacion">
+  <div class="card shadow-sm mb-4">
+    <div class="card-header"><h5 class="mb-0">Información General</h5></div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">N° Referencia <span class="text-danger">*</span></label>
+          <input type="text" name="numero_referencia" class="form-control" required
+                 value="{{ request.form.get('numero_referencia', imp.numero_referencia) }}">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Proveedor <span class="text-danger">*</span></label>
+          <select name="proveedor_id" class="form-select" required>
+            <option value="">Seleccionar…</option>
+            {% for p in proveedores %}
+            <option value="{{ p.id }}"
+              {% if (request.form.get('proveedor_id')|int if request.form.get('proveedor_id') else imp.proveedor_id) == p.id %}selected{% endif %}>
+              {{ p.nombre }} ({{ p.pais }})
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">Estado <span class="text-danger">*</span></label>
+          <select name="estado" class="form-select" required>
+            {% for e in estados %}
+            <option value="{{ e }}"
+              {% if request.form.get('estado', imp.estado) == e %}selected{% endif %}>{{ e }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Fecha de Orden <span class="text-danger">*</span></label>
+          <input type="date" name="fecha_orden" class="form-control" required
+                 value="{{ request.form.get('fecha_orden', imp.fecha_orden.isoformat()) }}">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Fecha Est. Llegada</label>
+          <input type="date" name="fecha_estimada_llegada" class="form-control"
+                 value="{{ request.form.get('fecha_estimada_llegada', imp.fecha_estimada_llegada.isoformat() if imp.fecha_estimada_llegada else '') }}">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Fecha de Llegada</label>
+          <input type="date" name="fecha_llegada" class="form-control"
+                 value="{{ request.form.get('fecha_llegada', imp.fecha_llegada.isoformat() if imp.fecha_llegada else '') }}">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Moneda</label>
+          <select name="moneda" class="form-select">
+            {% for m in monedas %}
+            <option value="{{ m }}"
+              {% if request.form.get('moneda', imp.moneda) == m %}selected{% endif %}>{{ m }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-12">
+          <label class="form-label fw-semibold">Notas</label>
+          <textarea name="notas" class="form-control" rows="3">{{ request.form.get('notas', imp.notas or '') }}</textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Line items -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Artículos de la Importación</h5>
+      <button type="button" class="btn btn-success btn-sm" id="btnAgregarItem">
+        <i class="bi bi-plus"></i> Agregar Artículo
+      </button>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table align-middle mb-0" id="tablaItems">
+          <thead class="table-light">
+            <tr>
+              <th style="min-width:220px">Producto</th>
+              <th style="min-width:120px">Cantidad</th>
+              <th style="min-width:140px">Precio Unitario</th>
+              <th style="min-width:130px" class="text-end">Subtotal</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="itemsBody">
+            <!-- populated by JS using existing items data -->
+          </tbody>
+          <tfoot>
+            <tr class="table-light fw-bold">
+              <td colspan="3" class="text-end">Total:</td>
+              <td class="text-end" id="totalGlobal">0.00</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Guardar Cambios</button>
+    <a href="{{ url_for('importaciones_detalle', id=imp.id) }}" class="btn btn-outline-secondary">Cancelar</a>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Existing items passed to JS for pre-population
+const existingItems = [
+  {% for item in imp.items %}
+  { producto_id: {{ item.producto_id }}, cantidad: {{ item.cantidad }}, precio_unitario: {{ item.precio_unitario }} }{% if not loop.last %},{% endif %}
+  {% endfor %}
+];
+document.addEventListener('DOMContentLoaded', function() {
+  if (existingItems.length > 0) {
+    existingItems.forEach(function(item) {
+      agregarFila(item.producto_id, item.cantidad, item.precio_unitario);
+    });
+  } else {
+    agregarFila();
+  }
+});
+</script>
+{% endblock %}

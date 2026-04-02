@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Nuevo Producto{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2><i class="bi bi-plus-circle"></i> Nuevo Producto</h2>
+  <a href="{{ url_for('productos_lista') }}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left"></i> Volver
+  </a>
+</div>
+
+<div class="card shadow-sm" style="max-width:600px">
+  <div class="card-body">
+    <form method="post">
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Código <span class="text-danger">*</span></label>
+        <input type="text" name="codigo" class="form-control" required
+               value="{{ request.form.get('codigo', '') }}" placeholder="Ej: MOT-001">
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Nombre <span class="text-danger">*</span></label>
+        <input type="text" name="nombre" class="form-control" required
+               value="{{ request.form.get('nombre', '') }}" placeholder="Nombre del producto">
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Descripción</label>
+        <textarea name="descripcion" class="form-control" rows="3">{{ request.form.get('descripcion', '') }}</textarea>
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Unidad de Medida</label>
+        <input type="text" name="unidad_medida" class="form-control"
+               value="{{ request.form.get('unidad_medida', '') }}" placeholder="Ej: Unidad, Metro, Kg…">
+      </div>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Guardar</button>
+        <a href="{{ url_for('productos_lista') }}" class="btn btn-outline-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

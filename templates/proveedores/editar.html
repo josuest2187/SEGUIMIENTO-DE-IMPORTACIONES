@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Editar Proveedor – {{ prov.nombre }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2><i class="bi bi-pencil-square"></i> Editar Proveedor</h2>
+  <a href="{{ url_for('proveedores_lista') }}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left"></i> Volver
+  </a>
+</div>
+
+<div class="card shadow-sm" style="max-width:600px">
+  <div class="card-body">
+    <form method="post">
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Nombre <span class="text-danger">*</span></label>
+        <input type="text" name="nombre" class="form-control" required
+               value="{{ request.form.get('nombre', prov.nombre) }}">
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">País</label>
+        <input type="text" name="pais" class="form-control"
+               value="{{ request.form.get('pais', prov.pais or '') }}">
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Persona de Contacto</label>
+        <input type="text" name="contacto" class="form-control"
+               value="{{ request.form.get('contacto', prov.contacto or '') }}">
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Email</label>
+        <input type="email" name="email" class="form-control"
+               value="{{ request.form.get('email', prov.email or '') }}">
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Teléfono</label>
+        <input type="text" name="telefono" class="form-control"
+               value="{{ request.form.get('telefono', prov.telefono or '') }}">
+      </div>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Guardar Cambios</button>
+        <a href="{{ url_for('proveedores_lista') }}" class="btn btn-outline-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

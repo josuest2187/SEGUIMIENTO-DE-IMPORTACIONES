@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% block title %}Importación {{ imp.numero_referencia }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <h2><i class="bi bi-file-text"></i> {{ imp.numero_referencia }}</h2>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('importaciones_editar', id=imp.id) }}" class="btn btn-warning">
+      <i class="bi bi-pencil"></i> Editar
+    </a>
+    <button type="button" class="btn btn-danger"
+            data-bs-toggle="modal" data-bs-target="#modalEliminar">
+      <i class="bi bi-trash"></i> Eliminar
+    </button>
+    <a href="{{ url_for('importaciones_lista') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Volver
+    </a>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header"><h5 class="mb-0">Información de la Importación</h5></div>
+      <div class="card-body">
+        <dl class="row mb-0">
+          <dt class="col-sm-5">N° Referencia</dt>
+          <dd class="col-sm-7">{{ imp.numero_referencia }}</dd>
+
+          <dt class="col-sm-5">Proveedor</dt>
+          <dd class="col-sm-7">{{ imp.proveedor.nombre }}</dd>
+
+          <dt class="col-sm-5">País Proveedor</dt>
+          <dd class="col-sm-7">{{ imp.proveedor.pais or '—' }}</dd>
+
+          <dt class="col-sm-5">Estado</dt>
+          <dd class="col-sm-7">
+            <span class="badge {{ badge_class(imp.estado) }} fs-6">{{ imp.estado }}</span>
+          </dd>
+
+          <dt class="col-sm-5">Moneda</dt>
+          <dd class="col-sm-7">{{ imp.moneda }}</dd>
+
+          <dt class="col-sm-5">Valor Total</dt>
+          <dd class="col-sm-7 fw-bold fs-5">{{ imp.moneda }} {{ "%.2f"|format(imp.valor_total) }}</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header"><h5 class="mb-0">Fechas</h5></div>
+      <div class="card-body">
+        <dl class="row mb-0">
+          <dt class="col-sm-6">Fecha de Orden</dt>
+          <dd class="col-sm-6">{{ imp.fecha_orden.strftime('%d/%m/%Y') }}</dd>
+
+          <dt class="col-sm-6">Est. Llegada</dt>
+          <dd class="col-sm-6">
+            {{ imp.fecha_estimada_llegada.strftime('%d/%m/%Y') if imp.fecha_estimada_llegada else '—' }}
+          </dd>
+
+          <dt class="col-sm-6">Fecha Llegada Real</dt>
+          <dd class="col-sm-6">
+            {{ imp.fecha_llegada.strftime('%d/%m/%Y') if imp.fecha_llegada else '—' }}
+          </dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Items table -->
+<div class="card shadow-sm mb-4">
+  <div class="card-header"><h5 class="mb-0">Artículos</h5></div>
+  <div class="card-body p-0">
+    {% if imp.items %}
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Código</th>
+            <th>Producto</th>
+            <th>Unidad</th>
+            <th class="text-end">Cantidad</th>
+            <th class="text-end">Precio Unitario</th>
+            <th class="text-end">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in imp.items %}
+          <tr>
+            <td><code>{{ item.producto.codigo }}</code></td>
+            <td>{{ item.producto.nombre }}</td>
+            <td>{{ item.producto.unidad_medida or '—' }}</td>
+            <td class="text-end">{{ "%.2f"|format(item.cantidad) }}</td>
+            <td class="text-end">{{ imp.moneda }} {{ "%.2f"|format(item.precio_unitario) }}</td>
+            <td class="text-end fw-semibold">{{ imp.moneda }} {{ "%.2f"|format(item.subtotal) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot class="table-light fw-bold">
+          <tr>
+            <td colspan="5" class="text-end">Total:</td>
+            <td class="text-end">{{ imp.moneda }} {{ "%.2f"|format(imp.valor_total) }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-muted p-3 mb-0">Sin artículos registrados.</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Notes -->
+{% if imp.notas %}
+<div class="card shadow-sm mb-4">
+  <div class="card-header"><h5 class="mb-0"><i class="bi bi-journal-text"></i> Notas</h5></div>
+  <div class="card-body">
+    <p class="mb-0" style="white-space:pre-line">{{ imp.notas }}</p>
+  </div>
+</div>
+{% endif %}
+
+<!-- Delete modal -->
+<div class="modal fade" id="modalEliminar" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title"><i class="bi bi-exclamation-triangle"></i> Confirmar Eliminación</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        ¿Está seguro de que desea eliminar la importación <strong>{{ imp.numero_referencia }}</strong>?
+        Esta acción eliminará también todos sus artículos y no se puede deshacer.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <form method="post" action="{{ url_for('importaciones_eliminar', id=imp.id) }}">
+          <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Eliminar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
